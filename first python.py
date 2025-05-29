@@ -1,3 +1,0 @@
-#siuu
-
-print(python)
