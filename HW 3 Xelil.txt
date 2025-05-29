@@ -1,0 +1,55 @@
+1)
+SELECT hr.employees.last_name,
+       hr.jobs.job_title
+FROM hr.employees
+LEFT JOIN hr.jobs USING (job_id)
+WHERE hr.employees.commission_pct IS NOT NULL;
+
+2)
+SELECT dep.department_name,
+       man.first_name||' '||man.last_name manager_name,
+       man.salary
+FROM hr.employees emp
+JOIN hr.employees man ON emp.manager_id=man.employee_id
+JOIN hr.departments dep ON man.department_id = dep.department_id
+WHERE MONTHS_BETWEEN(sysdate, emp.hire_date)/12 >= 5;
+
+3)
+SELECT emp.first_name||' '||emp.last_name Full_Name,
+       emp.employee_id emp_id,
+       emp.manager_id man_id,
+       emp.hire_date emp_hire_date,
+       man.hire_date man_hire_date
+FROM hr.employees emp
+JOIN hr.employees man ON emp.manager_id = man.employee_id
+WHERE emp.hire_date < man.hire_date
+ORDER BY emp_id;
+
+4)
+SELECT first_name||' '||last_name,
+       hr.jobs.job_title
+FROM hr.employees
+LEFT JOIN hr.jobs USING (job_id)
+LEFT JOIN hr.job_history USING (employee_id)
+WHERE (EXTRACT(MONTH FROM end_date)-EXTRACT(MONTH FROM start_date))<6;
+
+5)
+SELECT 
+    CASE WHEN hr.departments.department_name IS NULL 
+         THEN 'No Department Assigned'
+         ELSE hr.departments.department_name
+    END AS department_name,
+    ROUND(AVG(salary)) AS avg_salary,
+    COUNT(*) AS num_emp,
+    COUNT(commission_pct)
+FROM hr.employees
+LEFT JOIN hr.departments USING (department_id)
+GROUP BY hr.departments.department_name;
+
+6)
+SELECT first_name||' '||last_name,
+       country_name
+FROM hr.employees
+LEFT JOIN hr.departments USING (department_id)
+LEFT JOIN hr.locations USING (location_id)
+LEFT JOIN hr.countries USING (country_id);  

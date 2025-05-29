@@ -1,0 +1,67 @@
+1)
+SELECT first_name||' '||last_name,
+       hire_date
+FROM HR.employees
+WHERE EXTRACT(MONTH FROM(hire_date))=5;
+
+2)
+SELECT *
+FROM hr.employees
+WHERE EXTRACT(YEAR FROM hire_date) = 2008;
+
+3)
+SELECT ROUND(SYSDATE-TO_DATE('01.01.2011','DD.MM.YYYY')) AS days_between
+FROM dual;
+
+4)
+SELECT MAX(salary) AS max_salary
+FROM hr.employees;
+
+5)
+SELECT department_id,
+       COUNT(*) AS num_employees
+FROM hr.employees
+GROUP BY department_id
+ORDER BY department_id;
+
+6)
+SELECT COUNT(*)
+FROM hr.employees
+WHERE EXTRACT(DAY FROM hire_date) > 15;
+
+7)
+SELECT department_id,
+       ROUND(AVG(salary)) AS avg_salaray
+FROM hr.employees
+WHERE commission_pct IS NOT NULL
+GROUP BY department_id;
+
+8)
+SELECT job_id,
+       ROUND(AVG(salary)) AS avg_salary
+FROM hr.employees
+HAVING AVG(salary)>10000
+GROUP BY job_id;
+
+9)
+SELECT job_id,
+       COUNT(*) AS num_employees,
+       SUM(salary) AS salary,
+       MAX(salary)-MIN(salary) AS difference
+FROM hr.employees
+GROUP BY job_id;
+
+10)
+SELECT manager_id,
+       COUNT(*)
+FROM hr.employees
+GROUP BY manager_id;
+
+11)
+/*
+CHAR məlumat ölçüsü həmişə əvvəlcədən təyin
+olunan uzunluğa uyğun olaraq təyin edilir,
+lakin VARCHAR tipində məlumat ölçüsü daxil 
+edilən mətnin uzunluğuna uyğun olaraq təyin edilir.
+*/
+

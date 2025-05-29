@@ -1,0 +1,198 @@
+SELECT *
+FROM HR.employees
+WHERE hire_date>='01.01.2005';
+
+SELECT *
+FROM HR.employees
+WHERE hire_date>=TO_DATE('2005.01.01','YYYY.MM.DD');
+
+SELECT *
+FROM HR.employees
+WHERE hire_date>=TO_DATE('2005 yanvar 01','YYYY Month DD');
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       TO_CHAR(hire_date,'YYYY/MM/DD')
+FROM HR.employees;
+
+SELECT first_name||' '||last_name
+       CONCAT(CONCAT(first_name,' '),last_name)
+FROM HR.employees;
+
+SELECT 'qss Analytics',
+       INITCAP('qss Analytics'),
+       LOWER('qss Analytics'),
+       UPPER('qss Analytics')
+FROM dual;
+
+SELECT 'QSS Analytics',
+       INSTR('QSS Analytics','ytics')
+FROM DUAL;
+
+SELECT first_name,
+       LENGTH(first_name)
+FROM HR.employees
+ORDER BY LENGTH(first_name) DESC;
+
+SELECT first_name,
+       LPAD(first_name,15,'*')
+FROM HR.employees;
+
+SELECT first_name,
+       RPAD(first_name,15,'*')
+FROM HR.employees;
+
+SELECT '   QSS   ',
+       LTRIM('   QSS   '),
+       RTRIM('   QSS   '),
+       TRIM('   QSS   ')
+FROM DUAL;
+    
+SELECT 'QSS Academy',
+       REPLACE('QSS Academy','QSS','DSA')
+FROM DUAL;   
+    
+SELECT first_name,
+       REPLACE(first_name,'a','QSS')
+FROM hr.employees;
+
+SELECT first_name,
+       SUBSTR(first_name,1,3)
+FROM hr.employees;
+
+SELECT first_name,
+       SUBSTR(first_name,-3,3)
+FROM HR.employees;
+
+SELECT first_name||' '||last_name,
+       LPAD(SUBSTR(phone_number,-4,4),16,'*')
+FROM HR.employees;
+
+SELECT first_name||' '||last_name,
+       '************'||SUBSTR(phone_number,-4,4)
+FROM hr.employees;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       ADD_MONTHS(hire_date,36)
+FROM hr.employees;
+
+SELECT TO_DATE('2023/02/28','YYYY/MM/DD'),
+       ADD_MONTHS(TO_DATE('2023/01/28','YYYY/MM/DD'),1)
+FROM DUAL;
+
+SELECT  SYSDATE,
+        CURRENT_DATE,
+        CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Paris'
+FROM DUAL;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       EXTRACT(YEAR FROM hire_date) date_year1,
+       EXTRACT(MONTH FROM hire_date) date_month1,
+       EXTRACT(DAY FROM hire_date) date_day1,
+       to_char(hire_date,'YYYY') date_year2,
+       to_char(hire_date,'MM') date_month2,
+       to_char(hire_date,'DD') date_day2,
+       SUBSTR(hire_date,-4,4) date_year2
+FROM hr.employees;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       LAST_DAY(hire_date)
+FROM HR.employees;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       EXTRACT(YEAR FROM SYSDATE)-EXTRACT(YEAR FROM hire_date),
+       ROUND(SYSDATE-HIRE_DATE,2),
+       MONTHS_BETWEEN(SYSDATE,HIRE_DATE)
+FROM HR.employees
+ORDER BY hire_date ASC;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       NEXT_DAY(SYSDATE,'Cümə')
+FROM hr.employees;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       NEXT_DAY(hire_date,'cümə')-hire_date
+FROM HR.employees;
+
+SELECT 123456789.123456789,
+       ROUND(123456789.123456789),
+       ROUND(123456789.123456789,2),
+       ROUND(123456789.123456789,5)
+FROM HR.employees;
+
+SELECT first_name||' '||last_name,
+       hire_date,
+       ROUND(hire_date,'MM'),
+       ROUND(hire_date,'YYYY')
+FROM hr.employees;
+
+SELECT first_name||' '||last_name,
+       commission_pct,
+       COALESCE(commission_pct,0),
+       NVL(commission_pct,0),
+       NVL2(commission_pct,'Komissiya yoxdur','Komissiya var')
+FROM hr.employees;
+
+SELECT first_name,
+       DECODE(SUBSTR(first_name,1,1),'A','Ilk herf a-dir','Ilk herf A deyil')
+FROM hr.employees;
+
+SELECT NULLIF(1,2)
+FROM DUAL;
+
+SELECT first_name||' '||last_name,
+       salary,
+       CASE WHEN salary>15000 THEN 'Varli'
+            WHEN salary BETWEEN 10000 AND 15000 THEN 'Orta'
+            WHEN salary BETWEEN 5000 AND 10000 THEN 'Kasib'
+            WHEN salary<5000 THEN 'Yoxsul' 
+            ELSE 'N/A' END AS metric
+FROM hr.employees;
+
+SELECT MIN(salary) min_emek_haqqi,
+       MAX(salary) max_emek_haqqi,
+       SUM(salary) cem_emek_haqqi,
+       COUNT(salary) isci_sayi,
+       ROUND (AVG(salary),2) orta_emek_haqqi
+FROM hr.employees;
+
+SELECT COUNT(DISTINCT department_id)
+FROM hr.employees;
+
+SELECT  department_id,
+        COUNT(salary),
+        SUM(salary),
+        ROUND(AVG(salary),2),
+        MIN(salary),
+        MAX(salary)
+FROM hr.employees
+GROUP BY department_id;
+
+SELECT  department_id,
+        first_name||' '||last_name,
+        COUNT(salary),
+        SUM(salary),
+        ROUND(AVG(salary),2),
+        MIN(salary),
+        MAX(salary)
+FROM hr.employees
+GROUP BY department_id,
+         first_name||' '||last_name;
+         
+SELECT  department_id,
+        COUNT(salary),
+        SUM(salary),
+        ROUND(AVG(salary),2),
+        MIN(salary),
+        MAX(salary)
+FROM hr.employees
+GROUP BY department_id
+HAVING AVG(salary)>7000
+ORDER BY department_id;
+

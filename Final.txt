@@ -1,0 +1,76 @@
+1)
+SELECT SUBSTR(FIRST_NAME,1,3) first_name_3
+FROM hr.employees;
+
+2)
+SELECT *
+FROM hr.EMPLOYEES
+WHERE salary<(SELECT SALARY
+              FROM hr.EMPLOYEES
+              WHERE EMPLOYEE_ID=182);
+
+3)
+SELECT emp.first_name||' '||emp.last_name full_name,
+       j.job_title,
+       jh.start_date,
+       jh.end_date
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON dep.department_id=emp.department_id
+LEFT JOIN hr.JOBS j ON emp.job_id=j.job_id
+LEFT JOIN hr.job_history jh ON jh.employee_id=emp.employee_id
+WHERE emp.commission_pct IS NULL
+AND jh.end_date=(SELECT MAX(jh.end_date)
+                 FROM hr.jobs
+                 WHERE emp.employee_id =jh.employee_id);
+
+4)
+SELECT j.job_title,
+       AVG(salary)
+FROM hr.employees emp
+LEFT JOIN hr.jobs j ON j.job_id=emp.job_id
+WHERE ROWNUM<=5
+GROUP BY j.job_title
+ORDER BY AVG(salary) DESC;
+
+5)
+SELECT *
+FROM hr.employees
+WHERE salary>5000
+UNION
+SELECT *
+FROM hr.employees
+WHERE salary<2000;
+
+6)
+CREATE TABLE year_of_hire_date (year INT,
+                                department_20 INT,
+                                department_50 INT,
+                                department_80 INT,
+                                department_90 INT);
+
+DROP TABLE year_of_hire_date;
+
+INSERT INTO year_of_hire_date (year,department_20,department_50,department_80,department_90)
+SELECT EXTRACT(YEAR FROM hire_date) AS "Year",
+       COUNT(CASE WHEN department_id = 20 THEN 1 END) AS "Department 20",
+       COUNT(CASE WHEN department_id = 50 THEN 1 END) AS "Department 50",
+       COUNT(CASE WHEN department_id = 80 THEN 1 END) AS "Department 80",
+       COUNT(CASE WHEN department_id = 90 THEN 1 END) AS "Department 90"
+FROM hr.employees
+GROUP BY EXTRACT(YEAR FROM hire_date)
+ORDER BY EXTRACT(YEAR FROM hire_date);
+
+SELECT *
+FROM year_of_hire_date;
+
+
+7)
+SELECT emp.first_name,
+       emp.last_name,
+       dep.department_name,
+       j.job_title,
+       salary,
+       DENSE_RANK() OVER (PARTITION BY dep.department_name, job_title ORDER BY emp.salary DESC) AS "rank"
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON dep.department_id=emp.department_id
+LEFT JOIN hr.jobs j ON j.job_id=emp.job_id;

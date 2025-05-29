@@ -1,0 +1,128 @@
+1)
+CREATE TABLE students (s_id INT PRIMARY KEY NOT NULL,
+                       first_name VARCHAR2(256),
+                       last_name VARCHAR2(256),
+                       phone_number VARCHAR2(256),
+                       email VARCHAR2(256));
+
+CREATE TABLE activities (a_id INT PRIMARY KEY,
+                         a_name VARCHAR2(256),
+                         cost INT);
+
+CREATE TABLE schedule (s_id INT NOT NULL,
+                       a_id INT NOT NULL,
+                       s_date DATE,
+FOREIGN KEY (s_id) REFERENCES students(s_id),
+FOREIGN KEY (a_id) REFERENCES activities(a_id));
+
+2)
+INSERT INTO students (s_id,first_name,last_name,phone_number,email)
+SELECT employee_id,first_name,last_name,phone_number,email
+FROM hr.employees;
+
+3)
+UPDATE students SET phone_number='***'
+WHERE s_id>200;
+
+4)
+UPDATE students SET first_name=UPPER(first_name);
+UPDATE students SET last_name=UPPER(last_name);
+
+5)
+UPDATE students SET email='DSA'
+WHERE s_id>150;
+
+6)
+CREATE TABLE programers (employee_id INT NOT NULL PRIMARY KEY,
+                         first_name VARCHAR2(256),
+                         last_name VARCHAR2(256),
+                         email VARCHAR2(256),
+                         phone_number VARCHAR2(256),
+                         hire_date DATE,
+                         job_id VARCHAR2(256), 
+                         salary INT,
+                         commission_pct INT,
+                         manager_id INT,
+                         department_id INT);
+
+INSERT INTO programers 
+SELECT employee_id,first_name,last_name,email,phone_number,hire_date,job_id, salary, commission_pct, manager_id, department_id 
+FROM hr.employees
+WHERE job_id LIKE '%PROG%';
+
+7)
+DELETE FROM students
+WHERE s_id BETWEEN 150 AND 160;
+
+SELECT *
+FROM students;
+
+8)
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (01,'music',10000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (02,'art',2000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (03,'sport',15000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (04,'theatre',5000);
+
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (100,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (101,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (102,03,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (103,04,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (104,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (105,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (106,03,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (107,04,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (108,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (109,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (110,03,'02.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (111,04,'03.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (112,01,'04.01.2023');
+
+TRUNCATE  TABLE schedule;
+
+DROP TABLE schedule;
+
+9)
+-- Verdiyim tarix '2023-05-05'
+
+-- Gələn ilin birinci və sonuncu günü.
+SELECT 
+    TO_DATE('01-01-' || TO_CHAR(ADD_MONTHS(DATE '2023-05-05', 12), 'YYYY'), 'DD-MM-YYYY') AS first_day_next_year,
+    TO_DATE('31-12-' || TO_CHAR(ADD_MONTHS(DATE '2023-05-05', 12), 'YYYY'), 'DD-MM-YYYY') AS last_day_next_year
+FROM dual;
+
+-- Gələn ayın birinci və sonuncu günü
+SELECT 
+    TRUNC(ADD_MONTHS(DATE '2023-05-05', 1), 'MONTH') AS first_day_next_month,
+    LAST_DAY(ADD_MONTHS(DATE '2023-05-05', 1)) AS last_day_next_month
+FROM dual;
+
+-- Keçən ayın birinci və sonuncu günü
+SELECT 
+    TRUNC(ADD_MONTHS(DATE '2023-05-05', -1), 'MONTH') AS first_day_prev_month,
+    LAST_DAY(ADD_MONTHS(DATE '2023-05-05', -1)) AS last_day_prev_month
+FROM dual;
+
+
+10)
+CREATE TABLE participants (first_name VARCHAR2(256),
+                           last_name VARCHAR2(256),
+                           salary INT CHECK(salary>10000));
+                           
+

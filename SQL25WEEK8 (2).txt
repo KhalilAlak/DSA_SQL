@@ -1,0 +1,205 @@
+CREATE TABLE new_emp1 (emp_id varchar(256),
+                      emp_name varchar(256),
+                      salary int,
+                      birth_date date);
+                      
+select *
+from new_emp1;
+
+CREATE TABLE new_emp_copy AS (SELECT * FROM hr.employees WHERE salary>=10000);
+
+SELECT *
+from new_emp_copy;
+
+DROP TABLE new_emp1;
+
+SELECT *
+FROM new_emp_copy;
+
+TRUNCATE TABLE new_emp_copy;
+
+SELECT *
+FROM new_emp_copy;
+
+DROP TABLE new_emp_copy;
+
+CREATE TABLE new_emp_copy AS (SELECT * FROM hr.employees WHERE salary>=10000);
+
+SELECT *
+FROM new_emp_copy;
+
+ALTER TABLE new_emp_copy ADD yeni_bos_sutun CHAR(8);
+
+SELECT *
+FROM new_emp_copy;
+
+ALTER TABLE new_emp_copy MODIFY yeni_bos_sutun DATE;
+
+SELECT *
+FROM new_emp_copy;
+
+ALTER TABLE new_emp_copy DROP COLUMN yeni_bos_sutun;
+
+CREATE TABLE empty_table_emp(employee_id varchar(8),
+                             employee_name varchar(128),
+                             salary int,
+                             birth_date date,
+                             department_id int);
+                             
+SELECT *
+FROM empty_table_emp;
+
+INSERT INTO empty_table_emp(employee_id,employee_name,salary,birth_date,department_id) 
+            VALUES('5','Yusif Ahmadov',7500,TO_DATE('1996-06-17','YYYY-MM-DD'),12);
+            
+SELECT *
+FROM empty_table_emp;
+
+INSERT INTO empty_table_emp(employee_id,employee_name,salary,birth_date,department_id) 
+            SELECT employee_id,first_name||' '||last_name,salary,hire_date,department_id FROM hr.employees;
+            
+SELECT *
+FROM empty_table_emp;
+
+UPDATE empty_table_emp SET salary=12000
+WHERE employee_id='5';
+
+SELECT *
+FROM empty_table_emp;
+
+UPDATE empty_table_emp SET employee_name='En chox maash alan'
+WHERE salary>=12000;
+
+SELECT *
+FROM empty_table_emp;
+
+DELETE empty_table_emp
+WHERE employee_name='En chox maash alan';
+
+SELECT employee_name,salary
+FROM empty_table_emp
+order by salary desc;
+
+DELETE empty_table_emp
+WHERE salary=(SELECT MAX(SALARY) FROM empty_table_emp);
+
+SELECT employee_name,salary
+FROM empty_table_emp
+order by salary desc;
+
+CREATE TABLE for_constraints (emp_id VARCHAR(8) NOT NULL,
+                              emp_name VARCHAR(256) UNIQUE,
+                              salary INT CHECK (salary>=12000),
+                              birth_date DATE);
+                              
+INSERT INTO for_constraints (emp_id,emp_name,salary,birth_date) VALUES ('1','Yusif Ahmadov',17000,to_date('1999-06-17','YYYY-MM-DD'));
+
+SELECT *
+FROM for_constraints;
+
+INSERT INTO for_constraints (emp_id,emp_name,salary,birth_date) VALUES (NULL,'Yusif Ahmadov',17000,to_date('1999-06-17','YYYY-MM-DD'));
+INSERT INTO for_constraints (emp_name,salary,birth_date) VALUES ('Yusif Ahmadov',17000,to_date('1999-06-17','YYYY-MM-DD'));
+
+--NULL constrainte gore 
+
+INSERT INTO for_constraints (emp_id,emp_name,salary,birth_date) VALUES (2,'Yusif Ahmadov',17000,to_date('1999-06-17','YYYY-MM-DD'));
+
+-- UNIQUE constrainte gore
+
+INSERT INTO for_constraints (emp_id,emp_name,salary,birth_date) VALUES (2,'Shahin Mammadov',7500,to_date('1999-06-17','YYYY-MM-DD'));
+
+--CHECK constrainte gore
+
+SELECT *
+FROM for_constraints;
+
+SELECT *
+FROM user_constraints
+where table_name='FOR_CONSTRAINTS';
+
+ALTER TABLE for_constraints DROP CONSTRAINT SYS_C0014821;
+
+INSERT INTO for_constraints (emp_id,emp_name,salary,birth_date) VALUES (2,'Shahin Mammadov',7500,to_date('1999-06-17','YYYY-MM-DD'));
+
+DELETE for_constraints
+WHERE salary<12000;
+
+ALTER TABLE for_constraints MODIFY salary INT CHECK (salary>=12000);
+
+SELECT *
+FROM hr.departments;
+
+--ONE-TO-MANY;
+--MANY-TO-ONE;
+--MANY-TO-MANY
+
+CREATE TABLE ex_primary_key (emp_id INT PRIMARY KEY,
+                             emp_name char(15));
+                             
+CREATE TABLE ex_for_key (next_emp_id INT PRIMARY KEY,
+                         for_id INT,
+                         CONSTRAINT sample_fk FOREIGN KEY (for_id) REFERENCES ex_primary_key(emp_id));
+                         
+SELECT *
+FROM user_constraints
+where table_name='EX_FOR_KEY';
+
+
+
+CREATE TABLE sample_regions (reg_id INT PRIMARY KEY,
+                             reg_name VARCHAR(256) NOT NULL);
+                             
+CREATE TABLE sample_students(student_id INT PRIMARY KEY,
+                             first_name VARCHAR(256),
+                             last_name VARCHAR(256),
+                             region_id INT,
+                             CONSTRAINTS sample_fk1 FOREIGN KEY (region_id) REFERENCES sample_regions(reg_id));
+                             
+SELECT *
+FROM sample_regions;
+
+SELECT *
+FROM sample_students;
+
+INSERT INTO sample_regions(reg_id,reg_name) VALUES (1,'Baku');
+INSERT INTO sample_regions(reg_id,reg_name) VALUES (2,'Agdash');
+INSERT INTO sample_regions(reg_id,reg_name) VALUES (3,'Zardab');
+INSERT INTO sample_regions(reg_id,reg_name) VALUES (4,'ismayilli');
+INSERT INTO sample_regions(reg_id,reg_name) VALUES (5,'Sumgayit');
+
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(1,'Baybala','Guneshov',2);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(2,'Elman','Hasanov',3);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(3,'Khalil','Alakbarzada',1);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(4,'Farid','Muslumlu',4);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(5,'Rashida','Imanova',5);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(6,'Laman','Eyvazova',1);
+INSERT INTO sample_students(student_id,first_name,last_name,region_id) VALUES(7,'QSS','Analytics',5);
+
+SELECT reg_name,
+       count(distinct student_id)
+FROM sample_students
+LEFT JOIN sample_regions ON sample_students.region_id=sample_regions.reg_id
+group by reg_name;
+
+
+SELECT first_name||' '||last_name,
+       salary,
+       department_id,
+       ROW_NUMBER() OVER(PARTITION BY department_id ORDER BY SALARY DESC),
+       RANK() OVER(PARTITION BY department_id ORDER BY SALARY DESC),
+       DENSE_RANK() OVER(PARTITION BY department_id ORDER BY SALARY DESC)
+FROM hr.employees;
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       DEPARTMENT_ID,
+       SALARY,
+       LAG(salary,1,0) OVER(PARTITION BY department_id ORDER BY SALARY DESC),
+       LEAD(salary,1,0) OVER(PARTITION BY department_id ORDER BY SALARY dESC)
+FROM hr.employees;
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       DEPARTMENT_ID,
+       FIRST_VALUE(FIRST_NAME||' '||LAST_NAME) OVER (PARTITION BY SALARY ORDER BY SALARY DESC),
+       LAST_VALUE(FIRST_NAME||' '||LAST_NAME) OVER (PARTITION BY SALARY ORDER BY SALARY DESC)
+FROM hr.employees

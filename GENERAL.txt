@@ -1,0 +1,713 @@
+--Case Study--
+/*1)Write a query in SQL to display job Title, the difference between minimum and maximum salaries
+for those jobs which max salary within the range 12000 to 18000.*/
+SELECT job_title,
+       max_salary-min_salary AS difference
+FROM hr.jobs
+WHERE max_salary BETWEEN 12000 AND 18000;
+
+/*2)Display the details of the employees who have no commission percentage and whose salary is
+within the range 7000 to 12000 for those employees who are not working in the departments
+50,30 and 80.*/
+SELECT *
+FROM hr.employees
+WHERE commission_pct IS NULL AND salary BETWEEN 7000 AND 12000 AND department_id NOT IN (30,50,80);
+
+/*3) Write a query in SQL to display the full name (first name and last name), hire date, commission
+percentage, email and telephone separated by '-', and salary for those employees whose salary
+is above 11000 and make the result set in a descending order by the full name.*/
+SELECT first_name||' '||last_name full_name,
+       hire_date,
+       commission_pct,
+       email||'-'||phone_number
+FROM hr.employees
+WHERE salary>11000
+ORDER BY full_name DESC;
+
+/*4)Write a query in SQL to display the first and last name, and salary for those employees whose first
+name is ending with the letter “m” and they have been hired before June 5th, 2010.*/
+SELECT first_name||' '||last_name,
+       salary
+FROM hr.employees
+WHERE first_name LIKE '%m';
+
+/*5)Display the full name (first and last), the phone number and email separated by hyphen, and
+salary, for those employees whose salary is not within the range of 9000 and 17000 and
+commission is not null. The column headings assign with Full_Name, Contact _Details and
+Remuneration respectively.*/
+SELECT first_name||' '||last_name full_name,
+       phone_number||'-'||email contact_details,
+       salary remuneration,
+       commission_pct
+FROM hr.employees
+WHERE commission_pct IS NOT NULL AND salary NOT BETWEEN 9000 AND 17000 ;
+
+/*6)Write a query in SQL to display all the information about the department Marketing.*/
+SELECT *
+FROM hr.employees
+WHERE department_id='20';
+
+/*7) Write a query to display data from job_history and make the result set in descending order by the
+epmloyee_id and ascending order by start date.*/
+SELECT *
+FROM hr.job_history
+ORDER BY employee_id DESC, start_date ASC;
+
+/*8)Write a query to display job_id and salary of employees whose phone number starts with 515 or
+590 and was hired after 2003 by sorting hire_date and salary in ascending way.*/
+SELECT job_id,
+       salary,
+       phone_number,
+       hire_date
+FROM hr.employees
+WHERE (phone_number LIKE '515%' OR phone_number LIKE '590%') AND EXTRACT(YEAR FROM hire_date)>2003
+ORDER BY hire_date,salary ASC;
+
+/*9)Write a query to display employees who were hired in 2001.*/
+SELECT *
+FROM hr.employees
+WHERE EXTRACT(YEAR FROM hire_date)='2001';
+
+/*10)Write a query to display employees’ first and last name who were not hired in 2006 and 2007.*/
+SELECT first_name,
+       last_name
+FROM hr.employees
+WHERE EXTRACT(YEAR FROM hire_date) <> '2006' AND EXTRACT(YEAR FROM hire_date) <> '2007';
+
+SELECT first_name,
+       last_name
+FROM hr.employees
+WHERE hire_date NOT BETWEEN '01.01.2006' AND '31.12.2007';
+
+/*11)Write a query to display email, job_id and first name of employees whose hired year was 2007
+or hired month was 1.*/
+SELECT email,
+       job_id,
+       first_name
+FROM hr.employees
+WHERE EXTRACT(YEAR FROM hire_date)='2007' OR EXTRACT(MONTH FROM hire_date)='1'; 
+
+/*12)Write a query to display details of employees who was hired after 2007 or salary is less than
+10000.*/
+SELECT *
+FROM hr.employees
+WHERE hire_date>'31.12.2007' OR salary<10000;
+
+--Home work 1--
+--1)Display first name and last name as full name, salary, commission pct, and hire date for employees with salary less than 10000.
+SELECT first_name||' '||last_name full_name,
+       salary,
+       commission_pct,
+       hire_date
+FROM hr.employees
+WHERE salary<10000;
+
+--2)Display city names (without repeated names) in ascending order from locations table.
+SELECT DISTINCT city
+FROM hr.locations
+ORDER BY city ASC;
+
+--3)Display the first name, hire date and job ID of the employees who is either IT Programmer or Sales Manager, and hired between 2002 and 2005.
+SELECT first_name,
+       hire_date,
+       job_id
+FROM hr.employees
+WHERE job_id='IT_PROG' OR job_id='SA_MAN' AND hire_date BETWEEN '01.01.2002' AND '31.12.2005';
+
+--4)Display details from jobs table in the descending order of the job title.
+SELECT *
+FROM hr.jobs
+ORDER BY job_title DESC;
+
+--5) Display details of the employees where commission percentage is null and salary in the range 5000 to 10000 and department id is 30.
+SELECT *
+FROM hr.employees
+WHERE commission_pct IS NULL AND salary BETWEEN 5000 AND 10000 AND department_id=30;
+
+--6). Display employees who joined after 1st January 2008.
+SELECT *
+FROM hr.employees
+WHERE hire_date>'01.01.2008'; 
+
+--7)Display details of employees with ID 150, 160 or 170.
+SELECT *
+FROM hr.employees
+WHERE employee_id IN (150,160,170);
+
+--8)Display employees where the first name or last name starts with S.
+SELECT *
+FROM hr.employees
+WHERE first_name LIKE 'S%' OR last_name LIKE 'S%';
+
+--9) Display the length of first name for employees where last name contain character ‘b’ after 3rd position.
+SELECT LENGTH(first_name)
+FROM hr.employees
+WHERE last_name LIKE '___b%';
+
+--Case Study 2--
+--1)Show minimum, average and maximum salary in last 15 years according to job id.--
+SELECT job_id,
+       hire_date,
+       MIN(salary),
+       ROUND(AVG(salary)),
+       MAX(salary)
+FROM hr.employees
+WHERE (EXTRACT(YEAR FROM sysdate)-EXTRACT(YEAR FROM hire_date))<=15
+GROUP BY job_id,hire_date;
+
+--2)How many employees hired after 2005 for each department?--
+SELECT department_id,
+       COUNT(DISTINCT employee_id) count
+FROM hr.employees
+WHERE EXTRACT(YEAR FROM hire_date)>2005
+GROUP BY department_id
+ORDER BY count DESC;
+
+--3)Write a query to show departments in which the difference between maximum and minimum salary is greater than 5000.--
+SELECT department_id,
+       (MAX(salary)-MIN(salary)) diff
+FROM hr.employees
+GROUP BY department_id
+HAVING (MAX(salary)-MIN(salary))>5000
+ORDER BY department_id;
+
+--*4)Display salaries of employees who has not commission pact according to departments(without using where).--
+SELECT department_id,
+       SUM(CASE WHEN commission_pct IS NULL THEN salary ELSE 0 END) AS sum_salary
+FROM hr.employees
+GROUP BY department_id;
+
+--5)How many people has job id with average salary between 3000 and 7000?--
+SELECT job_id,
+       COUNT(*),
+       AVG(salary)
+FROM hr.employees
+GROUP BY job_id
+HAVING AVG(salary) BETWEEN 3000 AND 7000;
+
+--*6)Find number of employees with same name.--
+SELECT first_name,
+       COUNT(*) AS ad_sayi
+FROM hr.employees
+GROUP BY first_name
+HAVING COUNT(*)>1;
+
+--*7)How many people with the same phone code work in departments 50 and 90?--
+SELECT SUBSTR(phone_number,1,3) AS phone_code,
+       COUNT(*) AS isci_sayi,
+       department_id
+FROM hr.employees
+WHERE department_id IN (50,90)
+GROUP BY SUBSTR(phone_number,1,3),department_id
+HAVING COUNT(*)>1;
+
+--*8)Display departments with average number of employees more than 5 in spring and autumn.--
+SELECT department_id,
+       COUNT(*)
+FROM hr.employees
+WHERE  EXTRACT(MONTH FROM hire_date) IN (3,4,5,9,10,11)
+GROUP BY department_id
+HAVING COUNT(*)>5;
+
+--9) How many employees work in departments which has maximum salary more than 5000?--
+SELECT department_id,
+       COUNT(*),
+       MAX(salary)
+FROM hr.employees
+GROUP BY department_id
+HAVING MAX(salary)>5000;
+
+--*10)Change second letter of employees names with the last letter and display.--
+SELECT first_name,
+       SUBSTR(first_name,1,1)
+       ||SUBSTR(first_name,-1,1)
+       ||SUBSTR(first_name,3,LENGTH(first_name)-3)
+       ||SUBSTR(first_name,2,1) AS change
+FROM hr.employees;
+
+--Home Work 2--
+--1)Display employees who joined in the month of May.
+SELECT *
+FROM hr.employees
+WHERE EXTRACT(MONTH FROM hire_date)='05';
+
+--2)Display employees who joined in the current year--
+SELECT *
+FROM hr.employees
+WHERE hire_date=sysdate;
+
+--*3)Display the number of days between system date and 1st January 2011.--
+SELECT ROUND(sysdate-TO_DATE('01.01.2011','DD.MM.YYYY')) AS days_between
+FROM dual;
+
+--4)Display maximum salary of employees.--
+SELECT MAX(salary)
+FROM hr.employees;
+
+--5)Display number of employees in each department.--
+SELECT department_id,
+       COUNT(*)
+FROM hr.employees
+GROUP BY department_id
+ORDER BY COUNT(*) DESC;
+
+--6)Display number of employees who joined after 15th of month.--
+SELECT COUNT(*)
+FROM hr.employees
+WHERE EXTRACT(DAY FROM hire_date)>15;
+
+--7)Display average salary of employees in each department who have commission percentage.
+SELECT department_id,
+       ROUND(AVG(salary))
+FROM hr.employees
+WHERE commission_pct IS NOT NULL
+GROUP BY department_id;
+
+--8)Display job ID for jobs with average salary more than 10000.--
+SELECT job_id,
+       COUNT(*),
+       AVG(salary)
+FROM hr.employees
+GROUP BY job_id
+HAVING AVG(salary)>10000;
+
+/*9)Display job ID, number of employees, sum of salary, and difference between the highest
+salary and the lowest salary of the employees for all jobs.*/
+SELECT job_id,
+       COUNT(*),
+       SUM(salary) sum_sallary,
+       MAX(salary)-MIN(salary) AS diff
+FROM hr.employees
+GROUP BY job_id
+ORDER BY COUNT(*) DESC;
+
+/*10)Display manager ID and number of employees managed by the manager.*/
+SELECT manager_id,
+       COUNT(*)
+FROM hr.employees
+GROUP BY manager_id
+ORDER BY manager_id ASC;
+
+/*11)*Search for the key differences between CHAR and VARCHAR data types.*/
+/*
+CHAR məlumat ölçüsü həmişə əvvəlcədən təyin
+olunan uzunluğa uyğun olaraq təyin edilir,
+lakin VARCHAR tipində məlumat ölçüsü daxil 
+edilən mətnin uzunluğuna uyğun olaraq təyin edilir.
+*/
+
+--Case Study 3--
+
+--*1)Display the first promotion year for each employee.
+
+SELECT first_name||' '||last_name,
+       py.pr_date
+FROM hr.employees emp
+LEFT JOIN (SELECT MIN(end_date) pr_date,
+                  employee_id
+           FROM hr.job_history 
+           GROUP BY employee_id) py ON emp.employee_id=py.employee_id;
+
+--*2)Display location, city and department name of employees who have been promoted more than once.--
+
+SELECT first_name||' '||last_name, 
+       loc.location_id,
+       loc.city,
+       dep.department_name
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON loc.location_id=dep.location_id
+WHERE emp.employee_id IN (SELECT employee_id
+                          FROM hr.job_history
+                          GROUP BY employee_id
+                          HAVING COUNT(*)>1);
+
+--3)Display minimum and maximum “hire_date” of employees work in IT and HR departments--
+
+SELECT department_name,
+       MIN(hire_date),
+       MAX(hire_date)
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+WHERE dep.department_name='IT' OR dep.department_name='Human Resources'
+GROUP BY department_name;
+
+SELECT MIN(hire_date),
+       MAX(hire_date),
+       dep.department_name
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+WHERE emp.department_id IN(40,60)
+GROUP BY dep.department_id, dep.department_name;
+
+/*4)Find difference between current date and hire dates of employees after sorting them by hire
+date, then show difference in days, months and years.*/
+
+SELECT first_name||' '||last_name,
+       ROUND(sysdate-hire_date) diff_day,
+       ROUND((sysdate-hire_date)/12) diff_month,
+       EXTRACT(YEAR FROM sysdate)-EXTRACT(YEAR FROM hire_date) diff_year
+FROM hr.employees
+ORDER BY hire_date;
+
+SELECT ROUND(sysdate-hire_date) AS days_diff,
+ABS(EXTRACT(DAY FROM hire_date)-EXTRACT(DAY FROM sysdate)) AS day_difference,
+ABS(EXTRACT(MONTH FROM hire_date)-EXTRACT(MONTH FROM sysdate)) AS month_difference,
+ABS(EXTRACT(YEAR FROM hire_date)-EXTRACT(YEAR FROM sysdate)) AS year_difference
+FROM hr.employees
+ORDER BY hire_date;
+
+--5)Find which departments used to hire earliest/latest.
+
+SELECT DISTINCT(department_name),
+       hire_date
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+WHERE hire_date=(SELECT MIN(hire_date)
+                 FROM hr.employees emp) OR
+      hire_date=(SELECT MAX(hire_date)
+                 FROM hr.employees);
+
+--*6)Find the number of departments with no employee for each city. 
+
+SELECT emp.first_name,
+       emp.last_name,
+       dep.department_name,
+       loc.city
+FROM hr.departments dep
+LEFT JOIN hr.employees emp ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+WHERE emp.first_name IS NULL;
+
+SELECT emp.first_name,
+       emp.last_name,
+       dep.department_name,
+       loc.city
+FROM hr.departments dep
+LEFT JOIN hr.employees emp ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+WHERE emp.first_name IS NULL;
+
+--*7)Create a category called “seasons” and find in which season most employees were hired.
+
+SELECT seasons,
+       COUNT(*) emp_num
+FROM (SELECT first_name,
+             CASE 
+                  WHEN to_char(hire_date,'MM') IN(12,01,02) THEN 'winter'
+                  WHEN to_char(hire_date,'MM') IN(03,04,05) THEN 'spring'
+                  WHEN to_char(hire_date,'MM') IN(06,07,08) THEN 'summer'
+                  ELSE 'autumn'
+              END seasons 
+       FROM hr.employees)
+GROUP BY seasons
+ORDER BY emp_num DESC;
+
+--8) Find the cities of employees with average salary more than 5000.
+
+SELECT loc.city,
+       ROUND(AVG(salary))
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON dep.department_id=emp.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+GROUP BY loc.city
+HAVING AVG(salary)>5000;
+
+--Home Work 3--
+
+/*1)Display last name, job title of employees who have commission percentage and belongs to
+department 30.*/
+
+SELECT last_name,
+       job_title
+FROM hr.employees emp
+LEFT JOIN hr.jobs j ON j.job_id=emp.job_id
+WHERE commission_pct IS NULL AND department_id=30;
+
+/**2)Display department name, manager name, and salary of the manager for all managers whose
+experience is more than 5 years*/
+
+SELECT dep.department_name,
+       man.first_name||' '||man.last_name man_name,
+       man.salary
+FROM hr.employees emp
+JOIN hr.employees man ON emp.manager_id=man.employee_id
+JOIN hr.departments dep ON dep.department_id=man.department_id
+WHERE MONTHS_BETWEEN(sysdate, emp.hire_date)/12 >= 5;
+
+SELECT dep.department_name,
+       man.first_name||' '||man.last_name manager_name,
+       man.salary
+FROM hr.employees emp
+JOIN hr.employees man ON emp.manager_id=man.employee_id
+JOIN hr.departments dep ON man.department_id = dep.department_id
+WHERE MONTHS_BETWEEN(sysdate, emp.hire_date)/12 >= 5;
+
+--*3)Display employee name if the employee joined before his manager. 
+
+SELECT emp.first_name||' '||emp.last_name Full_Name,
+       emp.employee_id emp_id,
+       emp.manager_id man_id,
+       emp.hire_date emp_hire_date,
+       man.hire_date man_hire_date
+FROM hr.employees emp
+JOIN hr.employees man ON emp.manager_id = man.employee_id
+WHERE emp.hire_date < man.hire_date
+ORDER BY emp_id;
+
+/*4)Display employee name, job title for the jobs, employee did in the past where the job was
+done less than six months.*/
+
+SELECT first_name||' '||last_name full_name,
+       job_title,
+       jh.end_date-jh.start_date
+FROM hr.employees emp
+LEFT JOIN hr.jobs j ON emp.job_id=j.job_id
+LEFT JOIN hr.job_history jh ON emp.employee_id=jh.employee_id
+WHERE (jh.end_date-jh.start_date)/12<6;
+
+SELECT first_name||' '||last_name,
+       hr.jobs.job_title
+FROM hr.employees
+LEFT JOIN hr.jobs USING (job_id)
+LEFT JOIN hr.job_history USING (employee_id)
+WHERE (EXTRACT(MONTH FROM end_date)-EXTRACT(MONTH FROM start_date))<6;
+
+/*5)Display department name, average salary and number of employees with commission within
+the department.*/
+
+SELECT dep.department_name,
+       ROUND(AVG(emp.salary)),
+       COUNT(*),
+       COUNT(commission_pct)
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+GROUP BY dep.department_name;
+
+SELECT 
+    CASE WHEN hr.departments.department_name IS NULL 
+         THEN 'No Department Assigned'
+         ELSE hr.departments.department_name
+    END AS department_name,
+    ROUND(AVG(salary)) AS avg_salary,
+    COUNT(*) AS num_emp,
+    COUNT(commission_pct)
+FROM hr.employees
+LEFT JOIN hr.departments USING (department_id)
+GROUP BY hr.departments.department_name;
+
+--6)Display employee name and country in which he is working.
+
+SELECT first_name||' '||last_name,
+       country_name
+FROM hr.employees
+LEFT JOIN hr.departments USING (department_id)
+LEFT JOIN hr.locations USING (location_id)
+LEFT JOIN hr.countries USING (country_id);  
+
+--Case Study 4
+
+--1)Return the name of the employee with the lowest salary in department 90.
+SELECT first_name||' '||last_name full_name
+FROM hr.employees
+GROUP BY first_name||' '||last_name
+HAVING salary=MIN(salary) AND department_id=90;
+
+/*2) Select the department name, employee name, and salary of all employees who work in the
+human resources or purchasing departments. Compute a rank for each unique salary in both
+departments.*/
+
+SELECT department_id,
+       last_name,
+       salary,
+       DENSE_RANK() OVER (PARTITION BY department_id
+       ORDER BY salary DESC) dr
+FROM hr.employees
+WHERE department_id IN (30,40); 
+
+--3)Select the 3 employees with minimum salary for department id 50.
+SELECT first_name,
+       department_id,
+       DENSE_RANK() OVER (PARTITION BY department_id
+       ORDER BY salary ASC)
+FROM hr.employees
+WHERE department_id IN (30,40);
+
+/**4)Show first name, last name, salary and previously listed employee’s salary who works in
+“IT_PROG” over hire date.*/
+
+SELECT first_name,
+       last_name,
+       salary,
+       LAG(TO_CHAR(salary),2,'Yoxdur')
+           OVER(ORDER BY hire_date)
+FROM hr.employees
+WHERE job_id='IT_PROG';
+
+--5)Display details of current job for employees who worked as IT Programmers in the past.
+
+SELECT *
+FROM hr.employees emp
+INNER JOIN hr.jobs j ON emp.job_id=j.job_id
+INNER JOIN hr.job_history jh ON emp.employee_id=jh.employee_id
+WHERE jh.job_id='IT_PROG';
+
+/*6)Make a copy of the employees table and update the salaries of the employees in the new table
+with the maximum salary in their departments.*/
+
+CREATE TABLE copy_emp_9 AS SELECT * FROM hr.employees;
+UPDATE emp_copy6 ec
+SET ec.salary=(SELECT MAX(SALARY)
+               FROM hr.employees emp 
+               WHERE emp.department_id=ec.department_id);
+               
+/*7)Make a copy of the employees table and update the salaries of the employees in the new table
+with a 30 percent increase.*/
+
+UPDATE copy_emp_9 ec
+SET ec.salary=ec.salary*1.3;
+
+--Home Work 4--
+
+/*1)According to the given diagram create STUDENTS , ACTIVITIES and SCHEDULE tables. (PK – PRIMARY
+KEY,FK – FOREIGN KEY, * - NOT NULL )*/
+
+CREATE TABLE students (s_id INT PRIMARY KEY NOT NULL,
+                       first_name VARCHAR2(256),
+                       last_name VARCHAR2(256),
+                       phone_number VARCHAR2(256),
+                       email VARCHAR2(256));  
+                       
+CREATE TABLE activities (a_id INT PRIMARY KEY,
+                         a_name VARCHAR2(256),
+                         cost INT);
+
+CREATE TABLE schedule (s_id INT NOT NULL,
+                       a_id INT NOT NULL,
+                       s_date DATE,
+FOREIGN KEY (s_id) REFERENCES students(s_id),
+FOREIGN KEY (a_id) REFERENCES activities(a_id));
+
+--2)Insert data into students table from employees table.--
+
+INSERT INTO students (s_id,first_name,last_name,phone_number,email)
+SELECT employee_id,first_name,last_name,phone_number,email
+FROM hr.employees;
+
+--3)Change phone number to ‘***’ for students with s_id > 200.
+
+UPDATE students SET phone_number='***'
+WHERE s_id>200;
+
+--4)Update first name and last names of students in Upper cases.
+
+UPDATE students SET first_name=UPPER(first_name);
+UPDATE students SET last_name=UPPER(last_name);
+
+/*5)Based on the students table populated with the following data, update the email to 'DSA' for all records
+whose s_id is greater than 150.*/
+
+UPDATE students SET email='DSA'
+WHERE s_id>150;
+
+--6)Create PROGRAMMERS table using records from EMPLOYEES where job_id contains ‘PROG’ substring
+
+CREATE TABLE programers (employee_id INT NOT NULL PRIMARY KEY,
+                         first_name VARCHAR2(256),
+                         last_name VARCHAR2(256),
+                         email VARCHAR2(256),
+                         phone_number VARCHAR2(256),
+                         hire_date DATE,
+                         job_id VARCHAR2(256), 
+                         salary INT,
+                         commission_pct INT,
+                         manager_id INT,
+                         department_id INT);
+
+INSERT INTO programers 
+SELECT employee_id,first_name,last_name,email,phone_number,hire_date,job_id, salary, commission_pct, manager_id, department_id 
+FROM hr.employees
+WHERE job_id LIKE '%PROG%';
+
+--7)Delete records from students table where s_id is between 150 and 160.
+
+DELETE FROM students
+WHERE s_id BETWEEN 150 AND 160;
+
+SELECT *
+FROM students;
+
+/*8)a) Insert some date into SCHEDULE, then truncate and see results.
+    b) Drop schedule table*/
+
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (01,'music',10000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (02,'art',2000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (03,'sport',15000);
+INSERT INTO activities(a_id,a_name,cost)
+VALUES (04,'theatre',5000);
+
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (100,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (101,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (102,03,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (103,04,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (104,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (105,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (106,03,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (107,04,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (108,01,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (109,02,'01.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (110,03,'02.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (111,04,'03.01.2023');
+INSERT INTO schedule (s_id,a_id,s_date)
+VALUES (112,01,'04.01.2023');
+
+TRUNCATE  TABLE schedule;
+
+DROP TABLE schedule;
+
+/*9)For any date given, write a script to find:
+a) The first and the last days of the next year;
+b) The first and the last days of the next month;
+c) The first and the last days of the previous month.*/
+
+-- Verdiyim tarix '2023-05-05'
+
+-- Gələn ilin birinci və sonuncu günü.
+SELECT 
+    TO_DATE('01-01-' || TO_CHAR(ADD_MONTHS(DATE '2023-05-05', 12), 'YYYY'), 'DD-MM-YYYY') AS first_day_next_year,
+    TO_DATE('31-12-' || TO_CHAR(ADD_MONTHS(DATE '2023-05-05', 12), 'YYYY'), 'DD-MM-YYYY') AS last_day_next_year
+FROM dual;
+
+-- Gələn ayın birinci və sonuncu günü
+SELECT 
+    TRUNC(ADD_MONTHS(DATE '2023-05-05', 1), 'MONTH') AS first_day_next_month,
+    LAST_DAY(ADD_MONTHS(DATE '2023-05-05', 1)) AS last_day_next_month
+FROM dual;
+
+-- Keçən ayın birinci və sonuncu günü
+SELECT 
+    TRUNC(ADD_MONTHS(DATE '2023-05-05', -1), 'MONTH') AS first_day_prev_month,
+    LAST_DAY(ADD_MONTHS(DATE '2023-05-05', -1)) AS last_day_prev_month
+FROM dual;
+
+/*10)Create a table named “Participants” which consists of first_name, last_name and salary (have to more
+than 10000).*/
+
+CREATE TABLE participants (first_name VARCHAR2(256),
+                           last_name VARCHAR2(256),
+                           salary INT CHECK(salary>10000));

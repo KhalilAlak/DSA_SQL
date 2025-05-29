@@ -1,0 +1,77 @@
+1)
+SELECT job_id,
+       hire_date,
+       MIN(salary), 
+       MAX(salary), 
+       ROUND(AVG(salary))
+FROM HR.employees
+WHERE (EXTRACT (YEAR FROM sysdate)-EXTRACT(YEAR FROM hire_date))<=15
+GROUP BY job_id,hire_date;
+
+2)
+SELECT department_id,
+       COUNT(*)
+FROM hr.employees
+WHERE hire_date>'31.12.2005'
+GROUP BY department_id;
+
+3)
+SELECT department_id,
+       MAX(salary)-MIN(salary) AS differences
+FROM hr.employees
+GROUP BY department_id
+HAVING MAX(salary)-MIN(salary)>5000;
+
+4)
+SELECT department_id,
+       SUM(CASE WHEN commission_pct IS NULL THEN salary ELSE 0 END) as sum_salary
+FROM hr.employees
+GROUP BY department_id;
+
+5)
+SELECT job_id,
+       COUNT(*),
+       AVG(salary)
+FROM hr.employees
+GROUP BY job_id
+HAVING AVG(salary) BETWEEN 3000 AND 7000; 
+
+6)
+SELECT first_name,
+       COUNT(*) AS ad_sayi
+FROM HR.employees
+GROUP BY first_name
+HAVING COUNT(*)>1;
+
+7)
+SELECT SUBSTR(phone_number,1,3) AS phone_code,
+       COUNT(*) AS isci_sayi,
+       department_id
+FROM hr.employees
+WHERE department_id IN (50,90)
+GROUP BY SUBSTR(phone_number,1,3),department_id
+HAVING COUNT(*)>1;
+
+8)
+SELECT department_id,
+       COUNT(*)
+FROM hr.employees
+WHERE EXTRACT (MONTH FROM hire_date) IN (3,4,5,9,10,11)
+GROUP BY department_id
+HAVING COUNT(*)>5;
+
+9)
+SELECT department_id,
+       MAX(salary),
+       COUNT(*)
+FROM hr.employees
+GROUP BY department_id
+HAVING MAX(salary)>5000;
+
+10)
+SELECT first_name,
+       SUBSTR(first_name,1,1)
+       ||SUBSTR(first_name,-1,1)
+       ||SUBSTR(first_name,3,LENGTH(first_name)-3)
+       ||SUBSTR(first_name,2,1) AS change 
+FROM hr.employees;

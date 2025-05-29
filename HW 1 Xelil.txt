@@ -1,0 +1,61 @@
+1)
+SELECT first_name,
+last_name,
+first_name||' '||last_name AS full_name,
+salary,
+commission_pct,
+hire_date
+FROM HR.employees
+WHERE salary<10000;
+
+2)
+SELECT DISTINCT city 
+FROM HR.locatıons
+ORDER BY city ;
+
+3)
+SELECT
+first_name,
+hire_date,
+job_id
+FROM hr.employees
+WHERE job_id='IT_PROG' OR job_id='SA_MAN'
+AND hire_date BETWEEN '01.01.2002' AND '31.12.2005';
+
+4)
+SELECT *
+FROM HR.jobs
+ORDER BY job_title DESC;
+
+5)
+SELECT *
+FROM HR.employees
+WHERE commission_pct IS NULL
+AND salary BETWEEN 5000 AND 10000
+AND department_ıd=30;
+
+6)
+SELECT *
+FROM HR.employees
+WHERE hire_date > '01.01.2008';
+
+7)
+SELECT *
+FROM HR.employees
+WHERE employee_id IN (150, 160, 170);
+
+8)
+SELECT *
+FROM HR.employees
+WHERE first_name LIKE 'S%' OR last_name LIKE 'S%';
+
+9)
+SELECT LENGTH(first_name)
+FROM HR.employees
+WHERE last_name LIKE '___b%';
+
+
+
+
+
+

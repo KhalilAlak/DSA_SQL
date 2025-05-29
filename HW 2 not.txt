@@ -1,0 +1,9 @@
+SELECT COUNT(*) AS num_employees
+FROM hr.employees
+WHERE EXTRACT(DAY FROM hire_date)>15;
+
+SELECT department_id,
+       AVG(salary) AS avg_salary
+FROM hr.employees
+WHERE commission_pct IS NOT NULL
+GROUP BY department_id;

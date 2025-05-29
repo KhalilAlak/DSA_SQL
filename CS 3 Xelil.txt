@@ -1,0 +1,82 @@
+1)
+SELECT first_name||' '||last_name,
+       py.pr_date
+FROM hr.employees emp
+LEFT JOIN (
+SELECT MIN(end_date) pr_date, employee_id 
+FROM hr.job_history
+GROUP BY employee_id) py
+ON emp.employee_id=py.employee_id;
+
+2)
+SELECT emp.first_name,
+       emp.last_name,
+       dep.department_name,
+       loc.city
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+WHERE emp.employee_id IN (SELECT employee_id
+                          FROM hr.job_history
+                          GROUP BY employee_id
+                          HAVING COUNT(*)>1);
+
+3)
+SELECT MIN(hire_date),
+       MAX(hire_date),
+       dep.department_name
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+WHERE emp.department_id IN(40,60)
+GROUP BY dep.department_id, dep.department_name;
+
+4)
+SELECT ROUND(sysdate-hire_date) AS days_diff,
+ABS(EXTRACT(DAY FROM hire_date)-EXTRACT(DAY FROM sysdate)) AS day_difference,
+ABS(EXTRACT(MONTH FROM hire_date)-EXTRACT(MONTH FROM sysdate)) AS month_difference,
+ABS(EXTRACT(YEAR FROM hire_date)-EXTRACT(YEAR FROM sysdate)) AS year_difference
+FROM hr.employees
+ORDER BY hire_date;
+
+5)
+SELECT DISTINCT department_name,
+       hire_date
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+WHERE hire_date=(SELECT min(hire_date)
+                 FROM hr.employees emp) OR
+      hire_date=(SELECT MAX(hire_date) 
+                 FROM hr.employees emp);
+           
+6)
+SELECT emp.first_name,
+       emp.last_name,
+       dep.department_name,
+       loc.city
+FROM hr.departments dep
+LEFT JOIN hr.employees emp ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+WHERE emp.first_name IS NULL;
+
+7)
+SELECT seasons,
+       COUNT(*) emp_num
+FROM (SELECT first_name,
+             CASE 
+                  WHEN to_char(hire_date,'MM') IN(12,01,02) THEN 'winter'
+                  WHEN to_char(hire_date,'MM') IN(03,04,05) THEN 'spring'
+                  WHEN to_char(hire_date,'MM') IN(06,07,08) THEN 'summer'
+                  ELSE 'autumn'
+              END seasons 
+       FROM hr.employees)
+GROUP BY seasons
+ORDER BY emp_num DESC;
+
+8)
+SELECT loc.city,
+       ROUND(AVG(salary))
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+GROUP BY loc.city
+HAVING AVG(salary)>5000;

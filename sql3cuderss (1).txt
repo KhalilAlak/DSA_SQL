@@ -1,0 +1,207 @@
+select *
+from hr.departments;
+
+select distinct department_Id
+from hr.employees;
+
+select *
+from hr.jobs;
+
+SELECT *
+FROM hr.employees
+inner JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id
+where first_name='Kimberely';
+
+SELECT *
+FROM  hr.jobs
+JOIN hr.employees ON hr.employees.job_id=hr.jobs.job_id;
+
+SELECT DISTINCT DEPARTMENT_ID
+FROM hr.employees
+order by department_id
+;
+select distinct department_id
+from hr.departments
+order by department_id;
+
+SELECT *
+FROM hr.employees
+inner JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id;
+
+SELECT *
+FROM hr.employees
+JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id;
+
+SELECT *
+FROM  hr.departments
+left outer JOIN hr.employees ON hr.employees.department_id=hr.departments.department_id;
+
+SELECT *
+FROM hr.employees
+RIGHT outer JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id;
+
+SELECT *
+FROM hr.employees
+FULL OUTER JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id
+where first_name='Kimberely' or
+      hr.departments.department_id between 120 and 270;
+      
+SELECT hr.departments.department_name,
+       count(distinct hr.employees.employee_id)
+FROM hr.employees
+LEFT JOIN hr.departments ON hr.employees.department_id=hr.departments.department_id
+GROUP BY hr.departments.department_name;
+
+SELECT *
+FROM hr.employees
+CROSS JOIN hr.departments
+Where hr.departments.department_id=hr.employees.department_id
+order by hr.departments.department_id;
+
+SELECT *
+FROM hr.employees,hr.departments
+where hr.departments.department_id=hr.employees.department_id;
+
+SELECT first_name||' '||last_name,
+       salary,
+       hire_date,
+       department_name
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id;
+
+SELECT *
+FROM hr.employees emp
+LEFT JOIN hr.departments dep USING (department_id);
+
+select *
+from hr.employees emp
+LEFT JOIN hr.jobs j USING(JOB_ID);
+
+SELECT *
+FROM hr.employees emp
+LEFT JOIN hr.jobs j ON emp.job_id=j.job_id;
+
+SELECT *
+FROM hr.employees
+ORDER BY employee_id;
+
+SELECT emp.*,
+       man.first_name||' '||man.last_name
+FROM hr.employees emp
+LEFT JOIN hr.employees man ON emp.manager_id=man.employee_id
+order by emp.employee_id;
+
+SELECT man.first_name||' '||man.last_name,
+       count(distinct emp.employee_id)
+FROM hr.employees emp
+LEFT JOIN hr.employees man ON emp.manager_id=man.employee_id
+GROUP BY man.first_name||' '||man.last_name;
+
+--set operators
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 3000 AND 7000
+UNION 
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 5000 AND 8000;
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 3000 AND 7000
+UNION ALL 
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 5000 AND 8000;
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 3000 AND 7000
+INTERSECT
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 5000 AND 8000;
+
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 3000 AND 7000
+MINUS
+SELECT FIRST_NAME||' '||LAST_NAME,
+       SALARY,
+       HIRE_DATE
+FROM HR.EMPLOYEES
+WHERE SALARY BETWEEN 5000 AND 8000;
+
+SELECT first_name||' '||last_name,
+       'employee_name'
+FROM hr.employees
+union 
+select department_name,
+       'department_name'
+from hr.departments
+union select country_name,'country_name'
+      from hr.countries;
+      
+SELECT first_name||' '||last_name,
+       dep.department_name,
+       loc.city,
+       ctr.country_name,
+       reg.region_name
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+LEFT JOIN hr.countries ctr USING (country_id)
+LEFT JOIN hr.regions reg USING (region_id);
+
+SELECT *
+FROM hr.employees
+WHERE Salary=(select max(salary) from hr.employees);
+
+SELECT first_name||' '||last_name,
+       dep.department_name,
+       tb.mx
+FROM hr.employees
+LEFT JOIN hr.departments dep ON hr.employees.department_id=dep.department_id
+LEFT JOIN (SELECT department_id,
+                  max(salary) mx 
+           FROM hr.employees 
+           GROUP BY department_id) tb ON coalesce(tb.department_id,0)=coalesce(hr.employees.department_id,0)
+where hr.employees.salary=tb.mx;
+
+-- her bir regiona gore ortalama maash ve ishchi sayini ekranda gosterin
+
+SELECT reg.region_name,
+       round(avg(salary),2),
+       count(distinct emp.employee_id)
+FROM hr.employees emp
+LEFT JOIN hr.departments dep ON emp.department_id=dep.department_id
+LEFT JOIN hr.locations loc ON dep.location_id=loc.location_id
+LEFT JOIN hr.countries ctr ON loc.country_id=ctr.country_id
+LEFT JOIN hr.regions reg ON ctr.region_id=reg.region_id
+group by reg.region_name;
+
+
+SELECT reg.region_name,
+       round(avg(salary),2),
+       count(distinct emp.employee_id)
+FROM hr.employees emp
+LEFT JOIN hr.departments dep using(department_id)
+LEFT JOIN hr.locations loc USING(location_id)
+LEFT JOIN hr.countries ctr USING(country_id)
+LEFT JOIN hr.regions reg USING (region_id)
+group by reg.region_name
